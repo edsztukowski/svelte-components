@@ -11,6 +11,6 @@
 
 <style>
     button {
-        color: red;
+        background-color: red;
     }
 </style>
