@@ -1,16 +1,11 @@
 <script>
+    import Button from './Button.svelte';
     let count = 0;
     const increment = () => {
         count += 1;
     };
 </script>
 
-<button on:click={increment}>
+<Button on:click={increment}>
     count is {count}
-</button>
-
-<style>
-    button {
-        background-color: red;
-    }
-</style>
+</Button>
