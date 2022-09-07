@@ -1,48 +1,62 @@
-# Svelte + TS + Vite
+# Svelte components
 
-This template should help get you started developing with Svelte and TypeScript in Vite.
+## What is this?
 
-## Recommended IDE Setup
+Can we write components in Svelte and export them to be used in things like Shopify or Drupal.
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+## Direction
 
-## Need an official Svelte framework?
+We can write svelte components and use Rollup to generate a bundle that contains our components. We can include this bundle in a script tag on a site and then target div's to generate our components.
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
+For example, we have a "Counter" component written in svelte.
 
-## Technical considerations
-
-**Why use this over SvelteKit?**
-
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
-  `vite dev` and `vite build` wouldn't work in a SvelteKit environment, for example.
-
-This template contains as little as possible to get started with Vite + TypeScript + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
-
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
-
-**Why `global.d.ts` instead of `compilerOptions.types` inside `jsconfig.json` or `tsconfig.json`?**
-
-Setting `compilerOptions.types` shuts out all other types not explicitly listed in the configuration. Using triple-slash references keeps the default TypeScript setting of accepting type information from the entire workspace, while also adding `svelte` and `vite/client` type information.
-
-**Why include `.vscode/extensions.json`?**
-
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
-
-**Why enable `allowJs` in the TS template?**
-
-While `allowJs: false` would indeed prevent the use of `.js` files in the project, it does not prevent the use of JavaScript syntax in `.svelte` files. In addition, it would force `checkJs: false`, bringing the worst of both worlds: not being able to guarantee the entire codebase is TypeScript, and also having worse typechecking for the existing JavaScript. In addition, there are valid use cases in which a mixed codebase may be relevant.
-
-**Why is HMR not preserving my local component state?**
-
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/rixo/svelte-hmr#svelte-hmr).
-
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
-
-```ts
-// store.ts
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
 ```
+//On a page outside of our svelte project:
+<head>
+  <script defer="defer" src="path/to/bundle.js'" />
+</head>
+
+<body>
+  <div id="svelte-counter"></div>
+</body>
+
+<script>
+document.addEventListener("DOMContentLoaded", function (event) {
+    var el = document.getElementById('svelte-counter');
+    new window.Counter({ target: el });
+})
+</script>
+```
+
+You can additionally pass in props to these components with this syntax:
+
+```
+<script>
+document.addEventListener("DOMContentLoaded", function (event) {
+    var el = document.getElementById('svelte-counter');
+    new window.Counter({
+        target: el,
+        props: { count: 1}
+    });
+})
+</script>
+```
+
+## How it works
+
+We write all of our components in Svelte, then we have a `main.js` file that sets them to window variables.
+
+```
+//main.js
+import Counter from './Counter.svelte';
+import Header from './Header.svelte';
+
+window.Counter = function (options) {
+    return new Counter(options);
+};
+window.Header = function (options) {
+    return new Header(options);
+};
+```
+
+Rollup is configured to target `main.js` and generate a build file with our compiled svelte code. It handles both JS and CSS.
